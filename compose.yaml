@@ -1,0 +1,44 @@
+version: '3.8'
+services:
+  postgres:
+    container_name: postgres_db
+    image: postgres:15
+    ports:
+      - '5432'
+    environment:
+      POSTGRES_DB: swapi
+      POSTGRES_PASSWORD: "password"
+      POSTGRES_USER: "root"
+    volumes:
+      - postgres:/data/postgres
+    restart: unless-stopped
+
+# docker exec -it postgres_db psql -U root -d swapi
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4:7.4
+    labels:
+      org.springframework.boot.ignore: true
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@localhost.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_LISTEN_PORT: 5050
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+      - ./docker_pgadmin_servers.json:/pgadmin4/servers.json
+    ports:
+      - '5050:5050'
+    entrypoint:
+      - "/bin/sh"
+      - "-c"
+      - "/bin/echo 'postgres:5432:*:root:password' > /tmp/pgpassfile && chmod 600 /tmp/pgpassfile && /entrypoint.sh"
+    restart: unless-stopped
+
+volumes:
+  postgres:
+  pgadmin:
+
+
