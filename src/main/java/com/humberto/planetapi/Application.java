@@ -1,4 +1,4 @@
-package com.humberto.starwarsplanetapi;
+package com.humberto.planetapi;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
