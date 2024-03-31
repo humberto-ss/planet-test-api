@@ -7,6 +7,8 @@ import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
+import java.util.Objects;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "planets")
@@ -18,7 +20,7 @@ public class Planet {
     private String climate;
     private String terrain;
 
-    public Planet(PlanetCreateDTO dto){
+    public Planet(PlanetDTO dto){
         this.name = dto.name();
         this.climate = dto.climate();
         this.terrain = dto.terrain();
@@ -53,5 +55,18 @@ public class Planet {
 
     public void setTerrain(String terrain) {
         this.terrain = terrain;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Planet planet = (Planet) o;
+        return Objects.equals(name, planet.name) && Objects.equals(climate, planet.climate) && Objects.equals(terrain, planet.terrain);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, climate, terrain);
     }
 }
