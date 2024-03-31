@@ -3,6 +3,7 @@ package domain;
 
 import com.humberto.planetapi.domain.Planet;
 import com.humberto.planetapi.domain.PlanetDTO;
+import com.humberto.planetapi.infra.query.QueryBuilder;
 import com.humberto.planetapi.repository.PlanetRepository;
 import com.humberto.planetapi.service.PlanetService;
 import org.junit.jupiter.api.Test;
@@ -11,15 +12,19 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.data.domain.Example;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static com.humberto.planetapi.common.PlanetCommonsTest.PLANET_DTO;
 import static com.humberto.planetapi.common.PlanetCommonsTest.PLANET_FROM_DTO;
 import static com.humberto.planetapi.common.PlanetCommonsTest.PLANET_INVALID;
 import static com.humberto.planetapi.common.PlanetCommonsTest.PLANET_VALID;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 //@SpringBootTest(classes = PlanetService.class) //Start all the Spring to be able to use PlanetService only
 @ExtendWith(MockitoExtension.class) // Use only mockito to proceed with Unit Tests without be necessary Spring Framework
@@ -81,6 +86,30 @@ public class PlanetServiceTest {
        //Assert
        assertThat(planetID).isEmpty();
        assertThat(planetName).isEmpty();
+   }
+   @Test
+    void shouldNotReturnPlanets(){
+       //Arrange
+       Example<Planet> query = QueryBuilder.makeQuery(new Planet());
+       when(repository.findAll(query)).thenReturn(Collections.emptyList());
+       //Act
+       List<PlanetDTO> planets = service.list(null,null);
+       //Assert
+       assertThat(planets).isEmpty();
+   }
+   @Test
+    void shouldReturnAllPlanets(){
+       //TODO
+   }
+
+   @Test
+    void shouldNotThrowExceptionWhenDeletePlanetById(){
+      assertThatCode(()->service.remove(1L)).doesNotThrowAnyException();
+   }
+   @Test
+    void shouldThrowExecptionWhenDeleteByIdNotFound(){
+       doThrow(RuntimeException.class).when(repository).deleteById(1L);
+       assertThatThrownBy(()->service.remove(1L)).isInstanceOf(RuntimeException.class);
    }
 
 }
