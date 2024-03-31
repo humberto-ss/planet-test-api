@@ -3,10 +3,13 @@ package com.humberto.planetapi.controller;
 import com.humberto.planetapi.domain.Planet;
 import com.humberto.planetapi.domain.PlanetDTO;
 import com.humberto.planetapi.service.PlanetService;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/planets")
@@ -33,6 +36,20 @@ public class PlanetController {
         return service.findByName(name)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping
+    ResponseEntity<List<PlanetDTO>> list(@RequestParam(required = false) String terrain,
+                                         @RequestParam(required = false) String climate){
+
+        List<PlanetDTO> planets = service.list(terrain,climate);
+        return ResponseEntity.ok(planets);
+    }
+
+    @DeleteMapping("/{id}")
+    ResponseEntity<Void> delete(@PathVariable Long id){
+        service.remove(id);
+        return ResponseEntity.noContent().build();
     }
 
 }
